@@ -1,2 +1,2 @@
-# existence-explorer
-Existence explorer 3D game by JOrE Softwares, powered by THREE.JS
+# Existence Explorer 3D
+Existence Explorer 3D is a game created by JOrE Softwares, inspired from Minecraft. It powered by THREE.JS.
