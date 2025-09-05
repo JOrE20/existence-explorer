@@ -1,0 +1,39 @@
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color: white; font-family: Arial, sans-serif;">
+  <div style="text-align: center; max-width: 600px; padding: 2rem;">
+    <h1 style="font-size: 8rem; margin: 0; text-shadow: 0 0 20px rgba(79, 70, 229, 0.7);">404</h1>
+    <p style="font-size: 1.5rem; margin: 1rem 0; opacity: 0.9;">Oops! The dimension you're looking for doesn't exist.</p>
+    <p style="margin-bottom: 2rem; opacity: 0.8;">It seems you've wandered into uncharted territory. Let's get you back to the main world.</p>
+    
+    <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center;">
+      <button onclick="window.location.href='/'" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; border-radius: 5px; padding: 12px 24px; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; width: 200px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 0, 0, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 0, 0, 0.3)'">
+        Return to Game
+      </button>
+      
+      <button onclick="window.history.back()" style="background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 5px; padding: 10px 20px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; width: 200px;" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'">
+        Go Back
+      </button>
+    </div>
+    
+    <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+      <p style="font-size: 0.9rem; opacity: 0.7;">While you're here, why not try exploring some of these dimensions:</p>
+      <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+        <span style="background: rgba(79, 70, 229, 0.3); padding: 5px 10px; border-radius: 15px; font-size: 0.8rem;">Overworld</span>
+        <span style="background: rgba(220, 38, 38, 0.3); padding: 5px 10px; border-radius: 15px; font-size: 0.8rem;">Nether</span>
+        <span style="background: rgba(30, 64, 175, 0.3); padding: 5px 10px; border-radius: 15px; font-size: 0.8rem;">End</span>
+        <span style="background: rgba(139, 92, 246, 0.3); padding: 5px 10px; border-radius: 15px; font-size: 0.8rem;">Void</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  
+  h1 {
+    animation: float 3s ease-in-out infinite;
+  }
+</style>
