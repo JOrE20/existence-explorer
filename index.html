@@ -1,0 +1,1662 @@
+<div id="gameContainerEl" style="position:relative; width:100%; height:100vh; overflow:hidden;">
+  <!-- Game Canvas -->
+  <canvas id="gameCanvasEl" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
+  
+  <!-- Coordinate Display -->
+  <div id="coordinatesEl" style="position:absolute; top:10px; right:10px; color:#fff; font-family:monospace; background:rgba(0,0,0,0.7); padding:5px; border-radius:4px; z-index:10;">
+    X: 0, Y: 0, Z: 0
+  </div>
+  
+  <!-- FPS Display (hidden by default) -->
+  <div id="fpsEl" style="position:absolute; top:10px; left:10px; color:#fff; font-family:monospace; background:rgba(0,0,0,0.7); padding:5px; border-radius:4px; z-index:10; hidden;">
+    FPS: 0
+  </div>
+  
+  <!-- Settings Button -->
+  <button id="settingsBtn" style="position:absolute; top:10px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.7); border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; z-index:20;">
+    <img src="/q.png" alt="Settings" style="width:100%; height:100%; object-fit:contain;">
+  </button>
+  
+  <!-- Main Menu (hidden by default) -->
+  <div id="mainMenuEl" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color:#fff; padding:20px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.7); z-index:100; hidden;">
+    <h2 style="margin-top:0; text-align:center;">Existence Explorer 3D</h2>
+    
+    <div style="margin:15px 0;">
+      <h3>Controls:</h3>
+      <p>Arrow keys/WASD: Move</p>
+      <p>Space: Jump/Fly up</p>
+      <p>C: Duck/Fly down</p>
+      <p>Shift: Sprint/Fly faster</p>
+      <p>Ctrl: Extra speed (Godmode)</p>
+      <p>G: Toggle Godmode</p>
+      <p>K: Toggle flight (Godmode)</p>
+      <p>T: Menu</p>
+      <p>F: Toggle FPS</p>
+      <p>/: Command line</p>
+      <p>H: Achievements</p>
+      <p>P: Building</p>
+      <p>I: Gift menu</p>
+    </div>
+    
+    <div style="margin:15px 0;">
+      <h3>Player Position:</h3>
+      <p id="menuCoordsEl">X: 0, Y: 0, Z: 0</p>
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+      <button id="settingsMenuBtn" class="menuBtn">Settings</button>
+      <button id="commandMenuBtn" class="menuBtn">Command Line</button>
+      <button id="rotateMenuBtn" class="menuBtn">Rotating Simulator</button>
+      <button id="closeMenuBtn" class="menuBtn">Close</button>
+    </div>
+  </div>
+  
+  <!-- Settings Menu (hidden by default) -->
+  <div id="settingsMenuEl" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color:#fff; padding:20px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.7); z-index:100; hidden;">
+    <h2 style="margin-top:0; text-align:center;">Settings</h2>
+    
+    <div style="margin:15px 0;">
+      <h3>Key Bindings:</h3>
+      <div id="keyBindingsEl" style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+    
+    <div style="margin:15px 0;">
+      <h3>Quality:</h3>
+      <select id="qualitySelect" class="selectEl">
+        <option value="performance">Performance</option>
+        <option value="balanced" selected>Balanced</option>
+        <option value="quality">Quality</option>
+      </select>
+    </div>
+    
+    <div style="margin:15px 0;">
+      <h3>Base Speed:</h3>
+      <select id="speedSelect" class="selectEl">
+        <option value="sloth">Sloth (1 b/s)</option>
+        <option value="slow">Slow (3 b/s)</option>
+        <option value="normal" selected>Normal (7.5 b/s)</option>
+        <option value="fast">Fast (15 b/s)</option>
+        <option value="blazing">Blazing Fast (50 b/s)</option>
+        <option value="rocket">Rocket Mode (250 b/s)</option>
+      </select>
+    </div>
+    
+    <div style="margin:15px 0;">
+      <h3>View Range:</h3>
+      <select id="rangeSelect" class="selectEl">
+        <option value="minimal">Minimal (30 blocks)</option>
+        <option value="low">Low (100 blocks)</option>
+        <option value="normal" selected>Normal (250 blocks)</option>
+        <option value="far">Far View (500 blocks)</option>
+        <option value="telescope">Telescope (1,000 blocks)</option>
+        <option value="unlimited">Unlimited (10,000 blocks)</option>
+      </select>
+    </div>
+    
+    <div style="margin:15px 0;">
+      <h3>World Size:</h3>
+      <select id="worldSizeSelect" class="selectEl">
+        <option value="asteroid">Asteroid (100x100x100)</option>
+        <option value="small">Small (300x100x300)</option>
+        <option value="normal" selected>Normal (1,000x1,000x1,000)</option>
+        <option value="giant">Giant (5,000x5,000x5,000)</option>
+        <option value="unlimited">Unlimited</option>
+      </select>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; margin-top:20px;">
+      <button id="backToMainBtn" class="menuBtn">Back</button>
+      <button id="saveSettingsBtn" class="menuBtn">Save</button>
+    </div>
+  </div>
+  
+  <!-- Building Menu (hidden by default) -->
+  <div id="buildingMenuEl" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color:#fff; padding:20px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.7); z-index:100; hidden;">
+    <h2 style="margin-top:0; text-align:center;">Building Menu</h2>
+    
+    <div style="margin:15px 0;">
+      <h3>Block Color:</h3>
+      <input type="color" id="blockColorPicker" value="#ff0000" style="width:100%; height:40px;">
+    </div>
+    
+    <div style="margin:15px 0;">
+      <h3>Block Size:</h3>
+      <select id="blockSizeSelect" class="selectEl">
+        <option value="0.1">Micro (0.1 block)</option>
+        <option value="0.5">Small (0.5 block)</option>
+        <option value="1" selected>Normal (1 block)</option>
+        <option value="2">Big (2 block)</option>
+        <option value="5">Giant (5 block)</option>
+        <option value="10">Very Big (10 block)</option>
+      </select>
+    </div>
+    
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button id="placeBlockBtn" class="menuBtn">Place Block</button>
+      <button id="destroyBlockBtn" class="menuBtn">Destroy Block</button>
+    </div>
+    
+    <div style="margin:15px 0;">
+      <label>
+        <input type="checkbox" id="continueModeCheck"> Continue building/destroying
+      </label>
+    </div>
+    
+    <button id="closeBuildingBtn" class="menuBtn">Close</button>
+  </div>
+  
+  <!-- Gift Menu (hidden by default) -->
+  <div id="giftMenuEl" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color:#fff; padding:20px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.7); z-index:100; hidden;">
+    <h2 style="margin-top:0; text-align:center;">Gift Menu</h2>
+    
+    <div style="margin:15px 0;">
+      <label style="display:block; margin-bottom:10px;">
+        <h3>Export Mode:</h3>
+        <button id="exportGiftBtn" class="menuBtn" style="width:100%;">Export as Code</button>
+      </label>
+      <label style="display:block;">
+        <h3>Import Mode:</h3>
+        <button id="importGiftBtn" class="menuBtn" style="width:100%;">Import Code</button>
+      </label>
+    </div>
+    
+    <div style="margin:15px 0;">
+      <h3>Export Options:</h3>
+      <label>
+        <input type="checkbox" id="saveStructuresCheck" checked> Save structure data
+      </label>
+      <label>
+        <input type="checkbox" id="saveBlocksCheck" checked> Save block data
+      </label>
+      <div style="margin-top:10px;">
+        <h3>Gift Note (Optional):</h3>
+        <textarea id="giftNoteEl" style="width:100%; height:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:4px; padding:5px;" maxlength="500"></textarea>
+      </div>
+    </div>
+    
+    <button id="closeGiftBtn" class="menuBtn">Close</button>
+  </div>
+  
+  <!-- Export Code Memo (hidden by default) -->
+  <div id="exportMemoEl" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color:#fff; padding:20px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.7); z-index:100; hidden; max-width:80%; max-height:80vh; overflow-y:auto;">
+    <h2 style="margin-top:0; text-align:center;">Exported Dimension Code</h2>
+    <p style="margin:15px 0;">Copy this code to share your dimension:</p>
+    <textarea id="exportCodeEl" style="width:100%; height:100px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:4px; padding:5px; font-family:monospace; resize: none;" readonly></textarea>
+    <div style="margin-top:15px; display:flex; gap:10px; justify-content:center;">
+      <button id="copyExportBtn" class="menuBtn">Copy Code</button>
+      <button id="closeExportBtn" class="menuBtn">Close</button>
+    </div>
+  </div>
+  
+  <!-- Import Code Input (hidden by default) -->
+  <div id="importInputEl" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color:#fff; padding:20px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.7); z-index:100; hidden; max-width:80%; max-height:80vh; overflow-y:auto;">
+    <h2 style="margin-top:0; text-align:center;">Import Dimension Code</h2>
+    <p style="margin:15px 0;">Paste the dimension code here:</p>
+    <textarea id="importCodeEl" style="width:100%; height:100px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:4px; padding:5px; font-family:monospace;"></textarea>
+    <div style="margin-top:15px; display:flex; gap:10px; justify-content:center;">
+      <button id="doImportBtn" class="menuBtn">Import</button>
+      <button id="closeImportBtn" class="menuBtn">Cancel</button>
+    </div>
+    <div id="importNoteEl" style="margin-top:15px; padding:10px; background:rgba(255,255,255,0.1); border-radius:4px; display:none;">
+      <strong>Gift Note:</strong>
+      <p id="importNoteText" style="margin:5px 0;"></p>
+    </div>
+  </div>
+  
+  <!-- Achievements Menu (hidden by default) -->
+  <div id="achievementsMenuEl" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color:#fff; padding:20px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.7); z-index:100; hidden; max-width:80%; max-height:80vh; overflow-y:auto;">
+    <h2 style="margin-top:0; text-align:center;">Achievements</h2>
+    
+    <div id="achievementsListEl" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
+      <!-- Dynamically populated -->
+    </div>
+    
+    <button id="closeAchievementsBtn" class="menuBtn" style="margin-top:20px;">Close</button>
+  </div>
+  
+  <!-- Command Line Menu (hidden by default) -->
+  <div id="commandMenuEl" style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#fff; padding:10px; border-radius:5px; width:80%; max-width:600px; z-index:100; hidden;">
+    <div style="display:flex; align-items:center;">
+      <span style="margin-right:10px;">/</span>
+      <input type="text" id="commandInputEl" style="flex:1; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:3px; padding:5px;" placeholder="Enter command...">
+      <button id="executeCommandBtn" class="menuBtn" style="margin-left:10px;">Execute</button>
+    </div>
+    <div id="commandOutputEl" style="margin-top:10px; font-family:monospace; font-size:12px; max-height:100px; overflow-y:auto;"></div>
+  </div>
+  
+  <!-- Rotating Simulator Menu (hidden by default) -->
+  <div id="rotateMenuEl" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color:#fff; padding:20px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.7); z-index:100; hidden;">
+    <h2 style="margin-top:0; text-align:center;">Rotating Simulator</h2>
+    
+    <div style="margin:15px 0;">
+      <label>Rotation Speed (RPM):</label>
+      <input type="number" id="rpmInputEl" min="0" max="10000" step="0.1" value="1" style="width:100%; padding:5px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:3px;">
+    </div>
+    
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button id="startRotateBtn" class="menuBtn">Start Rotating</button>
+      <button id="stopRotateBtn" class="menuBtn">Stop Rotating</button>
+    </div>
+    
+    <button id="closeRotateBtn" class="menuBtn" style="margin-top:20px;">Close</button>
+  </div>
+  
+  <!-- Loading Indicator -->
+  <div id="loadingEl" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#fff; font-size:24px; z-index:200; hidden;">
+    Loading...
+  </div>
+  
+  <!-- Game Messages -->
+  <div id="messageEl" style="position:absolute; top:60px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.7); color:#fff; padding:10px 20px; border-radius:5px; z-index:50; hidden;"></div>
+  
+  <!-- Ad Placeholder (commented as requested) -->
+  <!-- <div id="adPlaceholder" style="position:absolute; bottom:0; left:0; width:100%; height:90px; background:#333; z-index:5;"> 
+       Ad banner will be placed here 
+     </div> -->
+</div>
+
+<style>
+  /* Global Styles */
+  body { margin:0; padding:0; overflow:hidden; background:#000; font-family:Arial, sans-serif; }
+  
+  /* Menu Button Styles */
+  .menuBtn {
+    background:linear-gradient(135deg, #4f46e5, #7c3aed);
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    padding:10px 15px;
+    cursor:pointer;
+    font-size:14px;
+    transition:all 0.3s ease;
+  }
+  
+  .menuBtn:hover {
+    background:linear-gradient(135deg, #6366f1, #8b5cf6);
+    transform:translateY(-2px);
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+  }
+  
+  .menuBtn:active {
+    transform:translateY(0);
+  }
+  
+  /* Select Styles */
+  .selectEl {
+    width:100%;
+    padding:8px;
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.3);
+    color:#fff;
+    border-radius:4px;
+  }
+  
+  /* Achievement Card Styles */
+  .achievementCard {
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.2);
+    border-radius:8px;
+    padding:15px;
+    text-align:center;
+    transition:all 0.3s ease;
+  }
+  
+  .achievementCard:hover {
+    background:rgba(255,255,255,0.15);
+    transform:translateY(-3px);
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  }
+  
+  .achievementCard.locked {
+    opacity:0.5;
+    filter:grayscale(100%);
+  }
+  
+  .achievementCard h3 {
+    margin:0 0 10px 0;
+    color:#fbbf24;
+  }
+  
+  .achievementCard p {
+    margin:0;
+    font-size:12px;
+    color:#d1d5db;
+  }
+  
+  /* Animation for backgrounds */
+  @keyframes gradientShift {
+    0% { background-position:0% 50%; }
+    50% { background-position:100% 50%; }
+    100% { background-position:0% 50%; }
+  }
+  
+  .animatedBg {
+    background-size:200% 200%;
+    animation:gradientShift 15s ease infinite;
+  }
+  
+  /* Gift Menu Specific Styles */
+  #giftMenuEl {
+    max-width:450px;
+  }
+  
+  #giftMenuEl .menuBtn {
+    margin:5px 0;
+  }
+  
+  #importNoteEl {
+    background:rgba(79,70,229,0.2);
+    border:1px solid #4f46e5;
+  }
+</style>
+
+<script type="module">
+  // Import Three.js
+  import * as THREE from "https://esm.sh/three@0.177.0";
+  
+  // Game State
+  const gameState = {
+    scene: null,
+    camera: null,
+    renderer: null,
+    player: {
+      position: { x: 0, y: 5, z: 0 },
+      rotation: { x: 0, y: 0 },
+      velocity: { x: 0, y: 0, z: 0 },
+      speed: 7.5,
+      viewRange: 250,
+      godmode: false,
+      flying: false,
+      onGround: false
+    },
+    world: {
+      dimension: "overworld",
+      size: "normal",
+      structures: [],
+      blocks: [],
+      structureBoundingBoxes: [] // Added for collision detection
+    },
+    controls: {
+      moveForward: false,
+      moveBackward: false,
+      moveLeft: false,
+      moveRight: false,
+      jump: false,
+      duck: false,
+      sprint: false,
+      fast: false
+    },
+    settings: {
+      quality: "balanced",
+      keyBindings: {
+        move1: "arrows",
+        move2: "wasd",
+        godmode: "g",
+        jump: " ",
+        duck: "c",
+        sprint: "shift",
+        veryfastmove: "ctrl",
+        flytoggle: "k", // Changed from space to k
+        menu: "t",
+        fpstoggle: "f",
+        cmdline: "/",
+        ach: "h",
+        gift: "i"
+      }
+    },
+    ui: {
+      showFPS: false,
+      buildingMode: false,
+      destroyMode: false,
+      continueMode: false,
+      rotating: false,
+      rpm: 0
+    },
+    achievements: {},
+    saveData: {}
+  };
+  
+  // Initialize Three.js
+  function initThreeJS() {
+    // Scene
+    gameState.scene = new THREE.Scene();
+    gameState.scene.background = new THREE.Color(0x87CEEB); // Sky blue
+    
+    // Camera
+    gameState.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+    gameState.camera.position.set(0, 5, 0);
+    
+    // Renderer
+    gameState.renderer = new THREE.WebGLRenderer({ 
+      canvas: gameCanvasEl,
+      antialias: true 
+    });
+    gameState.renderer.setSize(window.innerWidth, window.innerHeight);
+    gameState.renderer.shadowMap.enabled = true;
+    
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    gameState.scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(100, 100, 50);
+    directionalLight.castShadow = true;
+    gameState.scene.add(directionalLight);
+    
+    // Create enhanced grass texture
+    function createGrassTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024; // Increased resolution
+      canvas.height = 1024;
+      const context = canvas.getContext('2d');
+      
+      // Create gradient base for natural look
+      const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#4CAF50');
+      gradient.addColorStop(0.5, '#388E3C');
+      gradient.addColorStop(1, '#2E7D32');
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Add grass blades with varying colors and sizes
+      const bladeColors = ['#4CAF50', '#388E3C', '#2E7D32', '#66BB6A', '#81C784'];
+      
+      for (let i = 0; i < 15000; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const height = Math.random() * 12 + 5;
+        const width = Math.random() * 3 + 1;
+        const color = bladeColors[Math.floor(Math.random() * bladeColors.length)];
+        
+        context.fillStyle = color;
+        context.beginPath();
+        context.moveTo(x, y);
+        context.quadraticCurveTo(x + width/2, y - height/2, x + width/3, y - height);
+        context.quadraticCurveTo(x - width/2, y - height/2, x - width/3, y - height);
+        context.fill();
+      }
+      
+      // Add dirt patches
+      context.fillStyle = '#5D4037';
+      for (let i = 0; i < 3000; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const radius = Math.random() * 5 + 2;
+        
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.fill();
+      }
+      
+      // Add small flowers
+      const flowerColors = ['#FF4081', '#E91E63', '#9C27B0', '#673AB7'];
+      
+      for (let i = 0; i < 500; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const radius = Math.random() * 2 + 1;
+        const color = flowerColors[Math.floor(Math.random() * flowerColors.length)];
+        
+        context.fillStyle = color;
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.fill();
+      }
+      
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(100, 100);
+      
+      return texture;
+    }
+    
+    // Ground with enhanced grass
+    const groundGeometry = new THREE.PlaneGeometry(10000, 10000);
+    const groundMaterial = new THREE.MeshStandardMaterial({ 
+      map: createGrassTexture(),
+      roughness: 0.9,
+      metalness: 0.1
+    });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    ground.userData.isGround = true;
+    gameState.scene.add(ground);
+    
+    // Add basic structures
+    addBasicStructures();
+    
+    // Create shared geometries and materials for structures
+    const houseGeometry = new THREE.BoxGeometry(10, 8, 10);
+    const houseMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+    
+    const roofGeometry = new THREE.ConeGeometry(8, 5, 4); // For house roof
+    const roofMaterial = new THREE.MeshStandardMaterial({ color: 0xA52A2A });
+    
+    const towerGeometry = new THREE.CylinderGeometry(3, 3, 15, 8);
+    const towerMaterial = new THREE.MeshStandardMaterial({ color: 0x9E9E9E });
+    
+    const flagPoleGeometry = new THREE.CylinderGeometry(0.2, 0.2, 4, 4);
+    const flagPoleMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+    
+    const flagGeometry = new THREE.BoxGeometry(2, 1, 0.1);
+    const flagMaterial = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+    
+    const treeTrunkGeometry = new THREE.CylinderGeometry(0.5, 0.7, 6, 8);
+    const treeTrunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+    
+    const treeLeavesGeometry = new THREE.ConeGeometry(4, 8, 8);
+    const treeLeavesMaterial = new THREE.MeshStandardMaterial({ color: 0x2E8B57 });
+    
+    // New structure geometries and materials
+    const bridgeGeometry = new THREE.BoxGeometry(20, 1, 2);
+    const bridgeMaterial = new THREE.MeshStandardMaterial({ color: 0x616161 });
+    
+    const pyramidGeometry = new THREE.ConeGeometry(8, 12, 4);
+    const pyramidMaterial = new THREE.MeshStandardMaterial({ color: 0xFFCC80 });
+    
+    const archGeometry = new THREE.TorusGeometry(5, 0.5, 8, 20, Math.PI);
+    const archMaterial = new THREE.MeshStandardMaterial({ color: 0xB0BEC5 });
+    
+    const wallGeometry = new THREE.BoxGeometry(5, 4, 1);
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x78909C });
+    
+    const statueBodyGeometry = new THREE.CylinderGeometry(1.5, 1.5, 3, 8);
+    const statueHeadGeometry = new THREE.SphereGeometry(1, 8, 8);
+    const statueMaterial = new THREE.MeshStandardMaterial({ color: 0xCFD8DC });
+    
+    // Add first batch of 1000 structures
+    addStructureBatch(1000, houseGeometry, houseMaterial, roofGeometry, roofMaterial, 
+                     towerGeometry, towerMaterial, flagPoleGeometry, flagPoleMaterial,
+                     flagGeometry, flagMaterial, treeTrunkGeometry, treeTrunkMaterial, 
+                     treeLeavesGeometry, treeLeavesMaterial);
+    
+    // Add second batch of 1000 structures
+    addStructureBatch(1000, houseGeometry, houseMaterial, roofGeometry, roofMaterial, 
+                     towerGeometry, towerMaterial, flagPoleGeometry, flagPoleMaterial,
+                     flagGeometry, flagMaterial, treeTrunkGeometry, treeTrunkMaterial, 
+                     treeLeavesGeometry, treeLeavesMaterial);
+    
+    // Add advanced structures (new types)
+    addAdvancedStructures(500, bridgeGeometry, bridgeMaterial, pyramidGeometry, pyramidMaterial,
+                         archGeometry, archMaterial, wallGeometry, wallMaterial,
+                         statueBodyGeometry, statueHeadGeometry, statueMaterial);
+    
+    // Precompute structure bounding boxes for collision detection
+    precomputeStructureBoundingBoxes();
+  }
+  
+  // Add basic structures to the world
+  function addBasicStructures() {
+    // House with roof
+    const houseGeometry = new THREE.BoxGeometry(10, 8, 10);
+    const houseMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+    const house = new THREE.Mesh(houseGeometry, houseMaterial);
+    house.position.set(20, 4, 20);
+    house.castShadow = true;
+    house.userData.isStructure = true;
+    gameState.scene.add(house);
+    gameState.world.structures.push({
+      type: "house",
+      position: { x: 20, y: 4, z: 20 }
+    });
+    
+    // House roof
+    const roofGeometry = new THREE.ConeGeometry(8, 5, 4);
+    const roofMaterial = new THREE.MeshStandardMaterial({ color: 0xA52A2A });
+    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+    roof.position.set(20, 10.5, 20);
+    roof.rotation.y = Math.PI / 4;
+    roof.castShadow = true;
+    roof.userData.isStructure = true;
+    gameState.scene.add(roof);
+    
+    // Tower with flag
+    const towerGeometry = new THREE.CylinderGeometry(3, 3, 15, 8);
+    const towerMaterial = new THREE.MeshStandardMaterial({ color: 0x9E9E9E });
+    const tower = new THREE.Mesh(towerGeometry, towerMaterial);
+    tower.position.set(-20, 7.5, -20);
+    tower.castShadow = true;
+    tower.userData.isStructure = true;
+    gameState.scene.add(tower);
+    gameState.world.structures.push({
+      type: "tower",
+      position: { x: -20, y: 7.5, z: -20 }
+    });
+    
+    // Flag pole
+    const flagPoleGeometry = new THREE.CylinderGeometry(0.2, 0.2, 4, 4);
+    const flagPoleMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+    const flagPole = new THREE.Mesh(flagPoleGeometry, flagPoleMaterial);
+    flagPole.position.set(-20, 17, -20);
+    flagPole.castShadow = true;
+    flagPole.userData.isStructure = true;
+    gameState.scene.add(flagPole);
+    
+    // Flag
+    const flagGeometry = new THREE.BoxGeometry(2, 1, 0.1);
+    const flagMaterial = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+    const flag = new THREE.Mesh(flagGeometry, flagMaterial);
+    flag.position.set(-19, 16, -20);
+    flag.castShadow = true;
+    flag.userData.isStructure = true;
+    gameState.scene.add(flag);
+  }
+  
+  // Add a batch of structures to the world
+  function addStructureBatch(count, houseGeometry, houseMaterial, roofGeometry, roofMaterial, 
+                            towerGeometry, towerMaterial, flagPoleGeometry, flagPoleMaterial,
+                            flagGeometry, flagMaterial, treeTrunkGeometry, treeTrunkMaterial, 
+                            treeLeavesGeometry, treeLeavesMaterial) {
+    for (let i = 0; i < count; i++) {
+      // Randomly choose structure type
+      const structureType = Math.floor(Math.random() * 3); // 0: house, 1: tower, 2: tree
+      
+      // Random position within a large area
+      const x = (Math.random() - 0.5) * 2000; // -1000 to 1000
+      const z = (Math.random() - 0.5) * 2000;
+      
+      let structure, roof, tower, trunk, leaves, flagPole, flag, y;
+      
+      switch (structureType) {
+        case 0: // House
+          structure = new THREE.Mesh(houseGeometry, houseMaterial);
+          y = 4; // Half height of house
+          break;
+        case 1: // Tower
+          structure = new THREE.Mesh(towerGeometry, towerMaterial);
+          y = 7.5; // Half height of tower
+          break;
+        case 2: // Tree
+          // Create tree trunk
+          trunk = new THREE.Mesh(treeTrunkGeometry, treeTrunkMaterial);
+          trunk.position.set(x, 3, z);
+          trunk.castShadow = true;
+          trunk.userData.isStructure = true;
+          gameState.scene.add(trunk);
+          
+          // Create tree leaves
+          structure = new THREE.Mesh(treeLeavesGeometry, treeLeavesMaterial);
+          y = 9; // Position leaves above trunk
+          break;
+      }
+      
+      // Set position and properties
+      structure.position.set(x, y, z);
+      structure.castShadow = true;
+      structure.userData.isStructure = true;
+      gameState.scene.add(structure);
+      
+      // Add roof for houses
+      if (structureType === 0) {
+        roof = new THREE.Mesh(roofGeometry, roofMaterial);
+        roof.position.set(x, y + 6.5, z);
+        roof.rotation.y = Math.PI / 4;
+        roof.castShadow = true;
+        roof.userData.isStructure = true;
+        gameState.scene.add(roof);
+      }
+      
+      // Add flag for towers
+      if (structureType === 1) {
+        flagPole = new THREE.Mesh(flagPoleGeometry, flagPoleMaterial);
+        flagPole.position.set(x, y + 7.5, z);
+        flagPole.castShadow = true;
+        flagPole.userData.isStructure = true;
+        gameState.scene.add(flagPole);
+        
+        flag = new THREE.Mesh(flagGeometry, flagMaterial);
+        flag.position.set(x + 1, y + 7, z);
+        flag.castShadow = true;
+        flag.userData.isStructure = true;
+        gameState.scene.add(flag);
+      }
+      
+      // Add to world structures
+      gameState.world.structures.push({
+        type: structureType === 0 ? "house" : structureType === 1 ? "tower" : "tree",
+        position: { x, y, z }
+      });
+    }
+  }
+  
+  // Add advanced structures (new unique types)
+  function addAdvancedStructures(count, bridgeGeometry, bridgeMaterial, pyramidGeometry, pyramidMaterial,
+                                 archGeometry, archMaterial, wallGeometry, wallMaterial,
+                                 statueBodyGeometry, statueHeadGeometry, statueMaterial) {
+    for (let i = 0; i < count; i++) {
+      const structureType = Math.floor(Math.random() * 5); // 0-4: new types
+      const x = (Math.random() - 0.5) * 2000;
+      const z = (Math.random() - 0.5) * 2000;
+      
+      let structure, structure2, y;
+      
+      switch (structureType) {
+        case 0: // Bridge
+          structure = new THREE.Mesh(bridgeGeometry, bridgeMaterial);
+          y = 0.5;
+          structure.position.set(x, y, z);
+          break;
+        case 1: // Pyramid
+          structure = new THREE.Mesh(pyramidGeometry, pyramidMaterial);
+          y = 6;
+          structure.position.set(x, y, z);
+          break;
+        case 2: // Arch
+          structure = new THREE.Mesh(archGeometry, archMaterial);
+          y = 0;
+          structure.rotation.y = Math.random() * Math.PI * 2;
+          structure.position.set(x, y, z);
+          break;
+        case 3: // Castle wall
+          structure = new THREE.Mesh(wallGeometry, wallMaterial);
+          y = 2;
+          structure.position.set(x, y, z);
+          
+          // Add second part to make corner
+          structure2 = new THREE.Mesh(wallGeometry, wallMaterial);
+          structure2.position.set(x, y, z + 5);
+          structure2.rotation.y = Math.PI / 2;
+          gameState.scene.add(structure2);
+          structure2.userData.isStructure = true;
+          break;
+        case 4: // Statue
+          // Body
+          structure = new THREE.Mesh(statueBodyGeometry, statueMaterial);
+          y = 1.5;
+          structure.position.set(x, y, z);
+          
+          // Head
+          structure2 = new THREE.Mesh(statueHeadGeometry, statueMaterial);
+          structure2.position.set(x, y + 3, z);
+          gameState.scene.add(structure2);
+          structure2.userData.isStructure = true;
+          break;
+      }
+      
+      structure.castShadow = true;
+      structure.userData.isStructure = true;
+      gameState.scene.add(structure);
+      
+      gameState.world.structures.push({
+        type: ["bridge", "pyramid", "arch", "castle", "statue"][structureType],
+        position: { x, y, z }
+      });
+    }
+  }
+  
+  // Get bounding box for a structure
+  function getStructureBoundingBox(structure) {
+    const { type, position } = structure;
+    const boxes = [];
+    
+    switch (type) {
+      case "house":
+        // House: 10x8x10, centered at position
+        boxes.push({
+          min: { x: position.x - 5, y: position.y - 4, z: position.z - 5 },
+          max: { x: position.x + 5, y: position.y + 4, z: position.z + 5 }
+        });
+        // Roof
+        boxes.push({
+          min: { x: position.x - 8, y: position.y + 4, z: position.z - 8 },
+          max: { x: position.x + 8, y: position.y + 9, z: position.z + 8 }
+        });
+        break;
+      case "tower":
+        // Tower: radius 3, height 15 -> box of 6x15x6
+        boxes.push({
+          min: { x: position.x - 3, y: position.y - 7.5, z: position.z - 3 },
+          max: { x: position.x + 3, y: position.y + 7.5, z: position.z + 3 }
+        });
+        // Flag
+        boxes.push({
+          min: { x: position.x - 1, y: position.y + 7.5, z: position.z - 1 },
+          max: { x: position.x + 3, y: position.y + 11.5, z: position.z + 1 }
+        });
+        break;
+      case "tree":
+        // Trunk: 1.4x6x1.4, centered at (position.x, 3, position.z)
+        boxes.push({
+          min: { x: position.x - 0.7, y: position.y - 9, z: position.z - 0.7 },
+          max: { x: position.x + 0.7, y: position.y - 3, z: position.z + 0.7 }
+        });
+        // Leaves: 8x8x8, centered at (position.x, position.y, position.z)
+        boxes.push({
+          min: { x: position.x - 4, y: position.y - 4, z: position.z - 4 },
+          max: { x: position.x + 4, y: position.y + 4, z: position.z + 4 }
+        });
+        break;
+      case "bridge":
+        // Bridge: 20x1x2, centered at position
+        boxes.push({
+          min: { x: position.x - 10, y: position.y - 0.5, z: position.z - 1 },
+          max: { x: position.x + 10, y: position.y + 0.5, z: position.z + 1 }
+        });
+        break;
+      case "pyramid":
+        // Pyramid: 16x12x16, centered at position
+        boxes.push({
+          min: { x: position.x - 8, y: position.y - 6, z: position.z - 8 },
+          max: { x: position.x + 8, y: position.y + 6, z: position.z + 8 }
+        });
+        break;
+      case "arch":
+        // Arch: torus with radius 5, tube 0.5 -> box of 11x1x5
+        boxes.push({
+          min: { x: position.x - 5.5, y: position.y - 0.5, z: position.z - 5.5 },
+          max: { x: position.x + 5.5, y: position.y + 0.5, z: position.z + 0.5 }
+        });
+        break;
+      case "castle":
+        // Castle wall: 5x4x1, centered at position
+        boxes.push({
+          min: { x: position.x - 2.5, y: position.y - 2, z: position.z - 0.5 },
+          max: { x: position.x + 2.5, y: position.y + 2, z: position.z + 0.5 }
+        });
+        // Adjacent wall
+        boxes.push({
+          min: { x: position.x - 0.5, y: position.y - 2, z: position.z + 0.5 },
+          max: { x: position.x + 0.5, y: position.y + 2, z: position.z + 5.5 }
+        });
+        break;
+      case "statue":
+        // Statue body: 3x3, centered at position
+        boxes.push({
+          min: { x: position.x - 1.5, y: position.y - 1.5, z: position.z - 1.5 },
+          max: { x: position.x + 1.5, y: position.y + 1.5, z: position.z + 1.5 }
+        });
+        // Head: 2x2x2, centered above body
+        boxes.push({
+          min: { x: position.x - 1, y: position.y + 1.5, z: position.z - 1 },
+          max: { x: position.x + 1, y: position.y + 3.5, z: position.z + 1 }
+        });
+        break;
+    }
+    
+    return boxes;
+  }
+  
+  // Precompute all structure bounding boxes
+  function precomputeStructureBoundingBoxes() {
+    gameState.world.structureBoundingBoxes = [];
+    for (const structure of gameState.world.structures) {
+      const boxes = getStructureBoundingBox(structure);
+      gameState.world.structureBoundingBoxes.push(...boxes);
+    }
+  }
+  
+  // Check if point is inside a box
+  function isPointInBox(point, box) {
+    return point.x >= box.min.x && point.x <= box.max.x &&
+           point.y >= box.min.y && point.y <= box.max.y &&
+           point.z >= box.min.z && point.z <= box.max.z;
+  }
+  
+  // Check if point is inside any structure box
+  function isPointInAnyBox(point, boxes) {
+    for (const box of boxes) {
+      if (isPointInBox(point, box)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  // Check collision at position (camera and feet)
+  function checkCollisionAtPosition(pos) {
+    // Check camera position
+    if (isPointInAnyBox(pos, gameState.world.structureBoundingBoxes)) {
+      return true;
+    }
+    
+    // Check feet position (2 units below camera)
+    const feetPos = { x: pos.x, y: pos.y - 2, z: pos.z };
+    if (isPointInAnyBox(feetPos, gameState.world.structureBoundingBoxes)) {
+      return true;
+    }
+    
+    return false;
+  }
+  
+  // Handle keyboard input
+  function setupInputHandlers() {
+    document.addEventListener('keydown', (e) => {
+      // Check if target is an input, textarea, or contenteditable element
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+        return; // Ignore key events when typing in edit boxes
+      }
+      
+      const key = e.key.toLowerCase();
+      
+      // Movement
+      if (key === 'w' || key === 'arrowup') gameState.controls.moveForward = true;
+      if (key === 's' || key === 'arrowdown') gameState.controls.moveBackward = true;
+      if (key === 'a' || key === 'arrowleft') gameState.controls.moveLeft = true;
+      if (key === 'd' || key === 'arrowright') gameState.controls.moveRight = true;
+      
+      // Actions
+      if (key === ' ') gameState.controls.jump = true;
+      if (key === 'c') gameState.controls.duck = true;
+      if (key === 'shift') gameState.controls.sprint = true;
+      if (key === 'ctrl') gameState.controls.fast = true;
+      
+      // Toggle flight with K key (only in godmode)
+      if (key === 'k' && gameState.player.godmode) {
+        gameState.player.flying = !gameState.player.flying;
+        showMessage(`Flying ${gameState.player.flying ? 'enabled' : 'disabled'}`);
+      }
+      
+      // Menu toggles
+      if (key === 't') toggleMenu('mainMenuEl');
+      if (key === 'f') toggleFPS();
+      if (key === '/') toggleMenu('commandMenuEl');
+      if (key === 'h') toggleMenu('achievementsMenuEl');
+      if (key === 'p') toggleMenu('buildingMenuEl');
+      if (key === 'i') toggleMenu('giftMenuEl');
+      if (key === 'g') toggleGodmode();
+    });
+    
+    document.addEventListener('keyup', (e) => {
+      // Check if target is an input, textarea, or contenteditable element
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+        return; // Ignore key events when typing in edit boxes
+      }
+      
+      const key = e.key.toLowerCase();
+      
+      // Movement
+      if (key === 'w' || key === 'arrowup') gameState.controls.moveForward = false;
+      if (key === 's' || key === 'arrowdown') gameState.controls.moveBackward = false;
+      if (key === 'a' || key === 'arrowleft') gameState.controls.moveLeft = false;
+      if (key === 'd' || key === 'arrowright') gameState.controls.moveRight = false;
+      
+      // Actions
+      if (key === ' ') gameState.controls.jump = false;
+      if (key === 'c') gameState.controls.duck = false;
+      if (key === 'shift') gameState.controls.sprint = false;
+      if (key === 'ctrl') gameState.controls.fast = false;
+    });
+    
+    // Mouse movement for camera
+    document.addEventListener('mousemove', (e) => {
+      if (document.pointerLockElement === gameCanvasEl) {
+        gameState.player.rotation.y -= e.movementX * 0.002;
+        gameState.player.rotation.x -= e.movementY * 0.002;
+        
+        // Limit vertical rotation
+        gameState.player.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, gameState.player.rotation.x));
+      }
+    });
+    
+    // Click to lock pointer
+    gameCanvasEl.addEventListener('click', () => {
+      gameCanvasEl.requestPointerLock();
+    });
+  }
+  
+  // Toggle menu visibility
+  function toggleMenu(menuId) {
+    const menu = document.getElementById(menuId);
+    menu.hidden = !menu.hidden;
+    
+    // Close other menus when opening one
+    if (!menu.hidden) {
+      document.querySelectorAll('[id$="MenuEl"], [id$="MemoEl"], [id$="InputEl"]').forEach(el => {
+        if (el.id !== menuId && el.id.endsWith('MenuEl')) el.hidden = true;
+      });
+    }
+  }
+  
+  // Toggle FPS display
+  function toggleFPS() {
+    gameState.ui.showFPS = !gameState.ui.showFPS;
+    document.getElementById('fpsEl').hidden = !gameState.ui.showFPS;
+  }
+  
+  // Toggle godmode
+  function toggleGodmode() {
+    gameState.player.godmode = !gameState.player.godmode;
+    
+    // When disabling godmode, also disable flying
+    if (!gameState.player.godmode) {
+      gameState.player.flying = false;
+    }
+    
+    showMessage(`Godmode ${gameState.player.godmode ? 'enabled' : 'disabled'}`);
+    
+    // Unlock achievement
+    if (gameState.player.godmode && !gameState.achievements.cheat) {
+      unlockAchievement('cheat');
+    }
+  }
+  
+  // Show message to player
+  function showMessage(text) {
+    messageEl.textContent = text;
+    messageEl.hidden = false;
+    
+    setTimeout(() => {
+      messageEl.hidden = true;
+    }, 3000);
+  }
+  
+  // Unlock achievement
+  function unlockAchievement(id) {
+    gameState.achievements[id] = true;
+    showMessage(`Achievement unlocked: ${getAchievementName(id)}`);
+    updateAchievementsDisplay();
+  }
+  
+  // Get achievement name by ID
+  function getAchievementName(id) {
+    const achievements = {
+      cheat: "Cheat Cheat Cheat",
+      rocket: "The Rocket",
+      dimensionMaster: "Dimension Master",
+      endOfWorld: "End of world",
+      netherEnd: "Portal Master",
+      selfMapping: "Self-mapping",
+      blockbuster: "Blockbuster",
+      gettingDizzy: "Getting Dizzy",
+      brainConcussion: "Brain Concussion"
+    };
+    
+    return achievements[id] || "Unknown Achievement";
+  }
+  
+  // Update achievements display
+  function updateAchievementsDisplay() {
+    const container = document.getElementById('achievementsListEl');
+    container.innerHTML = '';
+    
+    // List of achievements
+    const achievements = [
+      { id: 'netherEnd', name: "Portal Master", desc: "(Visit both nether and end)", locked: !gameState.achievements.netherEnd },
+      { id: 'cheat', name: "Cheat Cheat Cheat", desc: "(Enable godmode)", locked: !gameState.achievements.cheat },
+      { id: 'rocket', name: "The Rocket", desc: "(Set speed to rocket mode)", locked: !gameState.achievements.rocket },
+      { id: 'dimensionMaster', name: "Dimension Master", desc: "(Visit every dimension)", locked: !gameState.achievements.dimensionMaster },
+      { id: 'endOfWorld', name: "End of world", desc: "(Visit end dimensions)", locked: !gameState.achievements.endOfWorld },
+      { id: 'selfMapping', name: "Self-mapping", desc: "(Remap a key)", locked: !gameState.achievements.selfMapping },
+      { id: 'blockbuster', name: "Blockbuster", desc: "(Place 1000 blocks)", locked: !gameState.achievements.blockbuster },
+      { id: 'gettingDizzy', name: "Getting Dizzy", desc: "(Rotate 15+ RPM)", locked: !gameState.achievements.gettingDizzy },
+      { id: 'brainConcussion', name: "Brain Concussion", desc: "(Rotate 300+ RPM)", locked: !gameState.achievements.brainConcussion }
+    ];
+    
+    // Shadow achievements
+    const shadowAchievements = [
+      { id: 'noSleep', name: "?", desc: "(No Sleep)", locked: true },
+      { id: 'oh', name: "?", desc: "(Oh...)", locked: true },
+      { id: 'supercomputer', name: "?", desc: "(Supercomputer)", locked: true },
+      { id: 'lightspeed', name: "?", desc: "(Lightspeed)", locked: true },
+      { id: 'soFar', name: "?", desc: "(So far to see you)", locked: true },
+      { id: 'goldYear', name: "?", desc: "(The gold-worthed year)", locked: true },
+      { id: 'multiverses', name: "?", desc: "(To the other multiverses)", locked: true },
+      { id: 'stressTest', name: "?", desc: "(The game was a stress test)", locked: true },
+      { id: 'browserWide', name: "?", desc: "(Browser-wide)", locked: true },
+      { id: 'hacker', name: "?", desc: "(Hacker)", locked: true },
+      { id: 'power', name: "?", desc: "(The power of supporting)", locked: true },
+      { id: 'console', name: "?", desc: "(Console Master)", locked: true },
+      { id: 'death', name: "?", desc: "(Death)", locked: true },
+      { id: 'decade', name: "?", desc: "(So far to see you to I cannot see you so far seeing I)", locked: true }
+    ];
+    
+    // Create achievement cards
+    [...achievements, ...shadowAchievements].forEach(ach => {
+      const card = document.createElement('div');
+      card.className = `achievementCard ${ach.locked ? 'locked' : ''}`;
+      
+      if (!ach.locked || ach.name === "?") {
+        card.innerHTML = `
+          <h3>${ach.name}</h3>
+          <p>${ach.desc}</p>
+        `;
+      } else {
+        card.innerHTML = `
+          <h3>?</h3>
+          <p>???</p>
+        `;
+      }
+      
+      container.appendChild(card);
+    });
+  }
+  
+  // Setup menu event listeners
+  function setupMenuListeners() {
+    // Settings button
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+      toggleMenu('mainMenuEl');
+    });
+    
+    // Main menu buttons
+    document.getElementById('settingsMenuBtn').addEventListener('click', () => {
+      toggleMenu('settingsMenuEl');
+    });
+    
+    document.getElementById('commandMenuBtn').addEventListener('click', () => {
+      toggleMenu('commandMenuEl');
+    });
+    
+    document.getElementById('rotateMenuBtn').addEventListener('click', () => {
+      toggleMenu('rotateMenuEl');
+    });
+    
+    document.getElementById('closeMenuBtn').addEventListener('click', () => {
+      toggleMenu('mainMenuEl');
+    });
+    
+    // Settings menu buttons
+    document.getElementById('backToMainBtn').addEventListener('click', () => {
+      toggleMenu('mainMenuEl');
+    });
+    
+    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+      // Save settings logic here
+      showMessage("Settings saved!");
+      toggleMenu('mainMenuEl');
+    });
+    
+    // Building menu buttons
+    document.getElementById('placeBlockBtn').addEventListener('click', () => {
+      gameState.ui.buildingMode = true;
+      gameState.ui.destroyMode = false;
+      showMessage("Building mode activated. Click to place block.");
+      toggleMenu('buildingMenuEl');
+    });
+    
+    document.getElementById('destroyBlockBtn').addEventListener('click', () => {
+      gameState.ui.destroyMode = true;
+      gameState.ui.buildingMode = false;
+      showMessage("Destroy mode activated. Click to destroy block.");
+      toggleMenu('buildingMenuEl');
+    });
+    
+    document.getElementById('closeBuildingBtn').addEventListener('click', () => {
+      toggleMenu('buildingMenuEl');
+    });
+    
+    // Gift menu buttons
+    document.getElementById('exportGiftBtn').addEventListener('click', exportGift);
+    document.getElementById('importGiftBtn').addEventListener('click', () => {
+      toggleMenu('importInputEl');
+    });
+    
+    document.getElementById('closeGiftBtn').addEventListener('click', () => {
+      toggleMenu('giftMenuEl');
+    });
+    
+    // Export memo buttons
+    document.getElementById('copyExportBtn').addEventListener('click', () => {
+      copyToClipboard(exportCodeEl.value);
+    });
+    
+    document.getElementById('closeExportBtn').addEventListener('click', () => {
+      toggleMenu('exportMemoEl');
+    });
+    
+    // Import input buttons
+    document.getElementById('doImportBtn').addEventListener('click', () => {
+      const importCode = document.getElementById('importCodeEl').value.trim();
+      if (importCode) {
+        importGift(importCode);
+      } else {
+        showMessage("Please enter a valid code");
+      }
+    });
+    
+    document.getElementById('closeImportBtn').addEventListener('click', () => {
+      toggleMenu('importInputEl');
+      document.getElementById('importCodeEl').value = '';
+      document.getElementById('importNoteEl').style.display = 'none';
+    });
+    
+    // Achievements menu
+    document.getElementById('closeAchievementsBtn').addEventListener('click', () => {
+      toggleMenu('achievementsMenuEl');
+    });
+    
+    // Command line
+    document.getElementById('executeCommandBtn').addEventListener('click', () => {
+      executeCommand();
+    });
+    
+    document.getElementById('commandInputEl').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        executeCommand();
+      }
+    });
+    
+    // Rotating simulator
+    document.getElementById('startRotateBtn').addEventListener('click', () => {
+      const rpm = parseFloat(document.getElementById('rpmInputEl').value);
+      gameState.ui.rotating = true;
+      gameState.ui.rpm = rpm;
+      showMessage(`Rotating at ${rpm} RPM`);
+      
+      // Unlock achievements
+      if (rpm >= 15 && !gameState.achievements.gettingDizzy) {
+        unlockAchievement('gettingDizzy');
+      }
+      if (rpm >= 300 && !gameState.achievements.brainConcussion) {
+        unlockAchievement('brainConcussion');
+      }
+    });
+    
+    document.getElementById('stopRotateBtn').addEventListener('click', () => {
+      gameState.ui.rotating = false;
+      gameState.ui.rpm = 0;
+      showMessage("Rotation stopped");
+    });
+    
+    document.getElementById('closeRotateBtn').addEventListener('click', () => {
+      toggleMenu('rotateMenuEl');
+    });
+  }
+  
+  // Export gift data
+  function exportGift() {
+    // Get save options
+    const saveStructures = document.getElementById('saveStructuresCheck').checked;
+    const saveBlocks = document.getElementById('saveBlocksCheck').checked;
+    const note = document.getElementById('giftNoteEl').value;
+    
+    // Prepare export data
+    const exportData = {
+      dimension: gameState.world.dimension,
+      size: gameState.world.size,
+      playerPosition: {...gameState.player.position}
+    };
+    
+    if (saveStructures) {
+      exportData.structures = [...gameState.world.structures];
+    }
+    
+    if (saveBlocks) {
+      exportData.blocks = [...gameState.world.blocks];
+    }
+    
+    if (note) {
+      exportData.note = note;
+    }
+    
+    // Convert to base64
+    const jsonString = JSON.stringify(exportData);
+    const base64Code = btoa(jsonString);
+    
+    // Show export memo
+    document.getElementById('exportCodeEl').value = base64Code;
+    toggleMenu('exportMemoEl');
+    
+    // Close gift menu
+    toggleMenu('giftMenuEl');
+  }
+  
+  // Import gift data
+  function importGift(base64Code) {
+    try {
+      // Decode base64 and parse JSON
+      const jsonString = atob(base64Code);
+      const importData = JSON.parse(jsonString);
+      
+      // Apply imported data
+      gameState.world.dimension = importData.dimension || "overworld";
+      gameState.world.size = importData.size || "normal";
+      
+      if (importData.structures) {
+        // Remove existing structures
+        const objectsToRemove = [];
+        gameState.scene.traverse((child) => {
+          if (child.isMesh && child.userData.isStructure) {
+            objectsToRemove.push(child);
+          }
+        });
+        objectsToRemove.forEach(obj => {
+          gameState.scene.remove(obj);
+        });
+        
+        // Add new structures
+        gameState.world.structures = importData.structures;
+        rebuildStructures();
+      }
+      
+      if (importData.blocks) {
+        // This would be implemented if block saving/creation was working
+        gameState.world.blocks = importData.blocks;
+      }
+      
+      if (importData.playerPosition) {
+        gameState.player.position = {...importData.playerPosition};
+      }
+      
+      // Show note if available
+      if (importData.note) {
+        document.getElementById('importNoteText').textContent = importData.note;
+        document.getElementById('importNoteEl').style.display = 'block';
+      } else {
+        document.getElementById('importNoteEl').style.display = 'none';
+      }
+      
+      // Close import input
+      toggleMenu('importInputEl');
+      showMessage("Dimension imported successfully!");
+      
+      // Precompute structure bounding boxes
+      precomputeStructureBoundingBoxes();
+      
+    } catch (error) {
+      showMessage("Invalid import code!");
+      console.error("Import error:", error);
+    }
+  }
+  
+  // Rebuild structures from saved data
+  function rebuildStructures() {
+    // This would be implemented to recreate structures from saved data
+    // For now, we just recalculate bounding boxes
+    precomputeStructureBoundingBoxes();
+  }
+  
+  // Copy text to clipboard
+  async function copyToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      showMessage("Copied to clipboard!");
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      showMessage("Copied to clipboard!");
+    }
+  }
+  
+  // Execute command
+  function executeCommand() {
+    const input = document.getElementById('commandInputEl').value.trim();
+    const output = document.getElementById('commandOutputEl');
+    
+    if (!input) return;
+    
+    // Add command to output
+    output.innerHTML += `<div>> ${input}</div>`;
+    
+    // Process command
+    const parts = input.split(' ');
+    const command = parts[0].toLowerCase();
+    
+    switch (command) {
+      case '/tp':
+      case '/teleport':
+        if (parts.length >= 4) {
+          const x = parseCoordinate(parts[1], gameState.player.position.x);
+          const y = parseCoordinate(parts[2], gameState.player.position.y);
+          const z = parseCoordinate(parts[3], gameState.player.position.z);
+          
+          gameState.player.position = { x, y, z };
+          output.innerHTML += `<div>Teleported to (${x}, ${y}, ${z})</div>`;
+        } else {
+          output.innerHTML += `<div>Usage: /tp [x] [y] [z]</div>`;
+        }
+        break;
+        
+      case '/speed':
+        if (parts.length >= 2) {
+          const speed = parts[1];
+          gameState.player.speed = getSpeedValue(speed);
+          output.innerHTML += `<div>Speed set to ${gameState.player.speed} b/s</div>`;
+          
+          // Unlock achievement
+          if (speed === 'rocket' && !gameState.achievements.rocket) {
+            unlockAchievement('rocket');
+          }
+        } else {
+          output.innerHTML += `<div>Current speed: ${gameState.player.speed} b/s</div>`;
+        }
+        break;
+        
+      case '/help':
+        output.innerHTML += `
+          <div>Available commands:</div>
+          <div>/tp [x] [y] [z] - Teleport to coordinates</div>
+          <div>/speed [value] - Set player speed</div>
+          <div>/godmode [on/off] - Toggle godmode</div>
+          <div>/fly [on/off] - Toggle flying</div>
+          <div>/help - Show this help</div>
+        `;
+        break;
+        
+      case '/godmode':
+        if (parts.length >= 2) {
+          const state = parts[1].toLowerCase();
+          gameState.player.godmode = state === 'on' || state === 'true';
+          
+          // When disabling godmode, also disable flying
+          if (!gameState.player.godmode) {
+            gameState.player.flying = false;
+          }
+          
+          output.innerHTML += `<div>Godmode ${gameState.player.godmode ? 'enabled' : 'disabled'}</div>`;
+        } else {
+          output.innerHTML += `<div>Godmode is currently ${gameState.player.godmode ? 'enabled' : 'disabled'}</div>`;
+        }
+        break;
+        
+      case '/fly':
+        if (parts.length >= 2) {
+          const state = parts[1].toLowerCase();
+          gameState.player.flying = state === 'on' || state === 'true';
+          output.innerHTML += `<div>Flying ${gameState.player.flying ? 'enabled' : 'disabled'}</div>`;
+        } else {
+          output.innerHTML += `<div>Flying is currently ${gameState.player.flying ? 'enabled' : 'disabled'}</div>`;
+        }
+        break;
+        
+      default:
+        output.innerHTML += `<div>Unknown command: ${command}</div>`;
+    }
+    
+    // Clear input and scroll to bottom
+    document.getElementById('commandInputEl').value = '';
+    output.scrollTop = output.scrollHeight;
+  }
+  
+  // Parse coordinate with support for relative values
+  function parseCoordinate(value, current) {
+    if (value.startsWith('~')) {
+      const offset = value.length > 1 ? parseFloat(value.substring(1)) : 0;
+      return current + offset;
+    }
+    return parseFloat(value);
+  }
+  
+  // Get speed value from setting
+  function getSpeedValue(setting) {
+    const speeds = {
+      'sloth': 1,
+      'slow': 3,
+      'normal': 7.5,
+      'fast': 15,
+      'blazing': 50,
+      'rocket': 250
+    };
+    
+    return speeds[setting] || parseFloat(setting) || 7.5;
+  }
+  
+  // Update player movement
+  function updatePlayer(deltaTime) {
+    const player = gameState.player;
+    const controls = gameState.controls;
+    
+    // Calculate movement direction
+    const direction = new THREE.Vector3();
+    
+    if (controls.moveForward) direction.z -= 1;
+    if (controls.moveBackward) direction.z += 1;
+    if (controls.moveLeft) direction.x -= 1;
+    if (controls.moveRight) direction.x += 1;
+    
+    direction.normalize();
+    
+    // Apply rotation
+    direction.applyQuaternion(
+      new THREE.Quaternion().setFromEuler(
+        new THREE.Euler(0, player.rotation.y, 0)
+      )
+    );
+    
+    // Calculate speed
+    let speed = player.speed;
+    if (controls.sprint) speed *= 1.5;
+    if (controls.fast && player.godmode) speed *= 3;
+    
+    // Calculate next position
+    let nextPos = {
+      x: player.position.x + direction.x * speed * deltaTime,
+      y: player.position.y + player.velocity.y * deltaTime,
+      z: player.position.z + direction.z * speed * deltaTime
+    };
+    
+    // Apply flying movement if in godmode and flying
+    if (player.godmode && player.flying) {
+      if (controls.jump) {
+        nextPos.y += speed * deltaTime;
+      }
+      if (controls.duck) {
+        nextPos.y -= speed * deltaTime;
+      }
+    }
+    
+    // Check for collisions with structures (unless in godmode)
+    if (!player.godmode && checkCollisionAtPosition(nextPos)) {
+      // Collision detected, prevent movement
+      return;
+    }
+    
+    // Apply gravity and ground/structure collision if not flying
+    if (!player.godmode || !player.flying) {
+      // Check for ground or structure below
+      const belowPos = { x: nextPos.x, y: nextPos.y - 2.1, z: nextPos.z };
+      
+      if (belowPos.y <= 0) {
+        // Ground collision
+        nextPos.y = 2;
+        player.velocity.y = 0;
+        player.onGround = true;
+      } else if (isPointInAnyBox(belowPos, gameState.world.structureBoundingBoxes)) {
+        // Standing on a structure
+        nextPos.y = belowPos.y + 2.1;
+        player.velocity.y = 0;
+        player.onGround = true;
+      } else {
+        // Apply gravity
+        player.velocity.y -= 20 * deltaTime;
+        player.onGround = false;
+      }
+    }
+    
+    // Jump if on ground and not flying
+    if (controls.jump && player.onGround && (!player.godmode || !player.flying)) {
+      player.velocity.y = 10;
+      player.onGround = false;
+    }
+    
+    // Update player position
+    player.position = nextPos;
+    
+    // Update camera position and rotation
+    gameState.camera.position.set(
+      player.position.x,
+      player.position.y,
+      player.position.z
+    );
+    
+    gameState.camera.rotation.set(
+      player.rotation.x,
+      player.rotation.y,
+      0
+    );
+    
+    // Update coordinates display
+    document.getElementById('coordinatesEl').textContent = 
+      `X: ${Math.round(player.position.x)}, Y: ${Math.round(player.position.y)}, Z: ${Math.round(player.position.z)}`;
+    document.getElementById('menuCoordsEl').textContent = 
+      `X: ${Math.round(player.position.x)}, Y: ${Math.round(player.position.y)}, Z: ${Math.round(player.position.z)}`;
+  }
+  
+  // Handle window resize
+  function handleResize() {
+    gameState.camera.aspect = window.innerWidth / window.innerHeight;
+    gameState.camera.updateProjectionMatrix();
+    gameState.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+  
+  // Game loop
+  let lastTime = 0;
+  let frameCount = 0;
+  let fpsTime = 0;
+  
+  function gameLoop(timestamp) {
+    const deltaTime = (timestamp - lastTime) / 1000;
+    lastTime = timestamp;
+    
+    // Update FPS
+    frameCount++;
+    fpsTime += deltaTime;
+    if (fpsTime >= 1) {
+      if (gameState.ui.showFPS) {
+        document.getElementById('fpsEl').textContent = `FPS: ${Math.round(frameCount / fpsTime)}`;
+      }
+      frameCount = 0;
+      fpsTime = 0;
+    }
+    
+    // Update player
+    updatePlayer(deltaTime);
+    
+    // Handle rotation
+    if (gameState.ui.rotating) {
+      gameState.player.rotation.y += gameState.ui.rpm * 0.1 * deltaTime;
+    }
+    
+    // Render scene
+    gameState.renderer.render(gameState.scene, gameState.camera);
+    
+    requestAnimationFrame(gameLoop);
+  }
+  
+  // Initialize game
+  function initGame() {
+    initThreeJS();
+    setupInputHandlers();
+    setupMenuListeners();
+    updateAchievementsDisplay();
+    
+    // Hide all menus on startup to fix the issue
+    document.querySelectorAll('[id$="MenuEl"], [id$="MemoEl"], [id$="InputEl"]').forEach(el => {
+      el.hidden = true;
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', handleResize);
+    
+    // Start game loop
+    requestAnimationFrame(gameLoop);
+    
+    // Hide loading indicator
+    loadingEl.hidden = true;
+    
+    // Show welcome message
+    showMessage("Welcome to Existence Explorer 3D! Press T for menu.");
+  }
+  
+  // Start the game when page loads
+  window.addEventListener('load', initGame);
+</script>
